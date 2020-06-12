@@ -6,7 +6,7 @@ TOTAL_GRIDS=9
 
 declare -A board
 
-function resetBoard
+function resetBoard()
 {
 	for (( position=1; position<=$TOTAL_GRIDS; position++ ))
 	do
@@ -14,4 +14,15 @@ function resetBoard
 	done
 }
 
-resetBoard
+function assignLetter()
+{
+	letter=$(( RANDOM%2 ))
+	if [ $letter -eq 1 ]
+	then
+		echo " Assigned Letter = X "
+	else
+		echo " Assigned Letter = O "
+	fi
+}
+
+assignLetter
