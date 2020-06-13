@@ -180,7 +180,7 @@ function displayWinner()
 	fi
 }
 
-function setComputerSymbol()
+function setComputerSymbolForWin()
 {
 	for (( i=1;i<=$NUMBER_OF_ROWS; i++ ))
 	do
@@ -195,22 +195,42 @@ function setComputerSymbol()
         done
 }
 
-function setSymbolForWin()
+function setComputerSymbolForBlock()
+{
+	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
+	do
+		for (( j=1; j<=$NUMBER_OF_COLUMNS; j++ ))
+		do
+			if [ ${board[$i,$j]} != '.' ]
+			then
+				${board[$i,$j]}=$playerSymbol
+				if [ $(checkWin) -eq 1 ]
+				then
+					${board[$i,$j]}=$computerSymbol
+				fi
+			fi
+		done
+	done
+}
+
+function setSymbol()
 {
 	if [ $flag -eq 1 ]
 	then
-		setComputerSymbol
+		setComputerSymbolForWin
+	else
+		setComputerSymbolForBlock
 	fi
 }
 
 function playForWin()
 {
 	checkRow
-	setSymbolForWin
+	setSymbol
 	checkColumn
-	setSymbolForWin
+	setSymbol
 	checkDiagonal
-	setSymbolForWin
+	setSymbol
 }
 
 resetBoard
