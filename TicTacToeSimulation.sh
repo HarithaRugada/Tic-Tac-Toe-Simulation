@@ -232,6 +232,7 @@ function playForWin()
 	checkDiagonal
 	setSymbol
 }
+
 function occupyCorner()
 {
 	 for (( i=1; i<=$NUMBER_OF_ROWS; i=$(( $i+2 )) ))
@@ -247,7 +248,16 @@ function occupyCorner()
 	done
 
 }
+
+function occupyCentre()
+{
+	if [ ${board[2,2]} == '.' ]
+	then
+		board[2,2]=$computerSymbol
+	fi
+}
+
 resetBoard
 toss
-occupyCorner
+occupyCentre
 displayBoard
