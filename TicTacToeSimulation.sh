@@ -3,31 +3,39 @@
 echo "WELCOME TO TIC TAC TOE SIMULATION"
 
 TOTAL_GRIDS=9
+NUMBER_OF_ROWS=3
+NUMBER_OF_COLUMNS=3
+
+flag=0
 
 declare -A board
 
 function resetBoard()
 {
-	for (( position=1; position<=$TOTAL_GRIDS; position++ ))
+	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
-		board[$position]=$position
+		for (( j=1; j<=$NUMBER_OF_COLUMNS; j++  ))
+		do
+			board[$i,$j]='.'
+		done
 	done
 }
 
 function assignLetter()
 {
 	local letter=$(( RANDOM%2 ))
+
 	if [ $letter -eq 1 ]
 	then
-		playerSymbol=X
-		computerSymbol=O
+		playerOneSymbol=X
+		playerTwoSymbol=O
 	else
-		playerSymbol=O
-		computerSymbol=X
+		playerOneSymbol=O
+		playerTwoSymbol=X
 	fi
 
-	echo "Player Symbol is " $playerSymbol
-	echo "Player Symbol is " $computerSymbol
+	echo "Player Symbol is " $playerOneSymbol
+	echo "Computer Symbol is " $playerTwoSymbol
 }
 
 function toss()
@@ -50,116 +58,126 @@ function toss()
 function displayBoard()
 {
 	echo "  --- --- --- "
-	echo " | ${board[1]} | ${board[2]} | ${board[3]} | "
+	echo " | ${board[1,1]} | ${board[1,2]} | ${board[1,3]} | "
 	echo "  --- --- --- "
-	echo " | ${board[4]} | ${board[5]} | ${board[6]} | "
+	echo " | ${board[2,1]} | ${board[2,2]} | ${board[2,3]} | "
 	echo "  --- --- --- "
-	echo " | ${board[7]} | ${board[8]} | ${board[9]} | "
+	echo " | ${board[3,1]} | ${board[3,2]} | ${board[3,3]} | "
 	echo "  --- --- --- "
 }
 
+
 function checkRow()
 {
-	local flag1=1
-
-	for (( position=1; position<=$TOTAL_GRIDS; position=$(( $position+3 )) ))
+	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
-		if [ ${board[$position]} -eq ${board[$(( $position+1 ))]} ]
-		then
-			if [ ${board[$position]} -eq ${board[$(( $position+1 ))]} ]
+		for (( j=1; j<=$NUMBER_OF_COLUMNS; ))
+		do
+			if [ ${board[$i,$j]} != '.' ]
 			then
-				if [ ${board[$position]} -eq ${board[$(( $position+1 ))]} ]
+				if [ ${board[$i,$j]} == ${board[$i,$(( j++ ))]} ]
 				then
-					flag1=0
+					flag=1
+					break
+				else
+					flag=0
 				fi
 			fi
-		else
-			flag1=1
-		fi
+		break
+		done
 	done
 
-	echo $flag1
+	echo $flag
 }
 
 function checkColumn()
 {
-        local flag2=1
-
-        for (( position=1; position<=$(( $TOTAL_GRIDS/3 )); position=$(( $position+3 )) ))
+        for (( i=1; i<=$NUMBER_OF_COLUMNS; i++ ))
         do
-                if [ ${board[$position]} -eq ${board[$(( $position+3 ))]} ]
-                then
-                        if [ ${board[$position]} -eq ${board[$(( $position+3 ))]} ]
+                for (( j=1; j<=$NUMBER_OF_ROWS; ))
+                do
+                        if [ ${board[$i,$j]} != '.' ]
                         then
-                                if [ ${board[$position]} -eq ${board[$(( $position+3 ))]} ]
+                                if [ ${board[$i,$j]} == ${board[$i,$(( j++ ))]} ]
                                 then
-                                        flag2=0
+                                        flag=1
+                                        break
+                                else
+                                        flag=0
                                 fi
                         fi
-                else
-                        flag2=1
-                fi
+                break
+                done
         done
 
-        echo $flag2
+        echo $flag
 }
 
 function checkDiagonal()
 {
-	local flag3=1
-
-	if [ ${board[1]} -eq ${board[5]} ]
+	if [ ${board[1]} == ${board[5]} ]
 	then
-		if [ ${board[5]} -eq ${board[9]} ]
+		if [ ${board[5]} == ${board[9]} ]
 		then
-			flag3=0
+			flag=1
 		fi
 
-	elif [ ${board[3]} -eq ${board[5]} ]
+	elif [ ${board[3]} == ${board[5]} ]
 	then
-		if [ ${board[5]} -eq ${board[7]} ]
+		if [ ${board[5]} == ${board[7]} ]
 		then
-			flag3=0
+			flag=1
 		fi
 
 	else
-		flag3=1
+		flag=0
 	fi
 
-        echo $flag3
+        echo $flag
 }
 
-function isWinner()
+function checkTie()
 {
-	position=1
-	while [ $position -le $TOTAL_GRIDS ]
+	local tie=1
+	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
-		resetBoard
-		toss
-		displayBoard
-		flag1=$(checkRow)
-		flag2=$(checkColumn)
-		flag3=$(checkDiagonal)
-
-		if [ $flag1 -eq 0 ]
-		then
-			echo "WIN"
-			exit
-
-		elif [ $flag2 -eq 0 ]
-		then
-			echo "WIN"
-			exit
-
-		elif [ $flag3 -eq 0 ]
-		then
-			echo "WIN"
-			exit
-		fi
-
-		position=$(( $position+1 ))
+		for (( j=1;j<=$NUMBER_OF_COLUMNS; j++ ))
+		do
+			if [ ${board[$i,$j]} == '.' ]
+			then
+				tie=0
+				break
+			fi
+		done
 	done
 }
+function checkWin()
+{
+	if [ $(checkRow) -eq 1 ]
+	then
+		echo $(checkRow)
+	elif [ $(checkColumn) -eq 1 ]
+	then
+		echo $(checkColumn)
+	elif [ $(checkDiagonal) -eq 1 ]
+	then
+		echo $(checkDiagonal)
+	else
+		echo
+	fi
+}
 
+function displayWinner()
+{
+	if [ $(checkWin) -eq 1 ]
+	then
+		echo "WON"
+	elif [ $(checkTie) -eq 1 ]
+	then
+		echo "TIE"
+	else
+		echo "Next Turn"
+	fi
+}
 
-isWinner
+displayWinner
