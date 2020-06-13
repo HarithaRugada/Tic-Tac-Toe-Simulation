@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 echo "WELCOME TO TIC TAC TOE SIMULATION"
 
@@ -180,4 +180,39 @@ function displayWinner()
 	fi
 }
 
-displayWinner
+function setComputerSymbol()
+{
+	for (( i=1;i<=$NUMBER_OF_ROWS; i++ ))
+	do
+                for (( j=1; j<=$NUMBER_OF_COLUMNS; j++ ))
+                do
+                        if [ ${board[$i,$j]} != '.' ]
+                        then
+				${board[$i,$j]}=$computerSymbol
+				break
+                        fi
+                done
+        done
+}
+
+function setSymbolForWin()
+{
+	if [ $flag -eq 1 ]
+	then
+		setComputerSymbol
+	fi
+}
+
+function playForWin()
+{
+	checkRow
+	setSymbolForWin
+	checkColumn
+	setSymbolForWin
+	checkDiagonal
+	setSymbolForWin
+}
+
+resetBoard
+toss
+playForWin
