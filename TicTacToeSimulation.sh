@@ -235,7 +235,7 @@ function playForWin()
 
 function occupyCorner()
 {
-	 for (( i=1; i<=$NUMBER_OF_ROWS; i=$(( $i+2 )) ))
+	for (( i=1; i<=$NUMBER_OF_ROWS; i=$(( $i+2 )) ))
         do
                 for (( j=1; j<=$NUMBER_OF_COLUMNS; j=$(( $j+2 )) ))
                 do
@@ -257,7 +257,26 @@ function occupyCentre()
 	fi
 }
 
+function occupySide()
+{
+	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
+        do
+                for (( j=1; j<=$(( $NUMBER_OF_COLUMNS-1 )); j++ ))
+                do
+			if [ $(( $j-$i )) -eq 1 ] || [ $(( $i-$j )) -eq 1 ]
+			then
+				if [ ${board[$i,$j]} == '.' ]
+				then
+					board[$i,$j]=$computerSymbol
+				fi
+			fi
+		done
+		break
+	done
+
+}
+
 resetBoard
 toss
-occupyCentre
+occupySide
 displayBoard
