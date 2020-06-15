@@ -81,21 +81,16 @@ function checkRow()
 {
 	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
-		for (( j=1; j<=$NUMBER_OF_COLUMNS; ))
-		do
-			if [ ${board[$i,$j]} != '.' ]
-			then
-				if [ ${board[$i,$j]} == ${board[$i,$(( $j+1 ))]} ] && [ ${board[$i,$(( $j+1 ))]} == ${board[$i,$(( $j+2 ))]} ]
-				then
-					value=1
-					break
-				fi
-			fi
-		done
-	if [ $value -eq 1 ]
-	then
-		break
-	fi
+		if [ $value -eq 0 ]
+		then
+		j=1
+		if [ ${board[$i,$j]} != "." ] && [ ${board[$i,$j]} == ${board[$i,$(( $j+1 ))]} ] && [ ${board[$i,$(( $j+1 ))]} == ${board[$i,$(( $j+2 ))]} ]
+		then
+			value=1
+			checkWinner
+			break
+		fi
+		fi
 	done
 }
 
@@ -103,63 +98,69 @@ function checkColumn()
 {
         for (( i=1; i<=$NUMBER_OF_COLUMNS; i++ ))
         do
-                for (( j=1; j<=$NUMBER_OF_ROWS; ))
-                do
-                        if [ ${board[$j,$i]} != '.' ]
-                        then
-                                if [ ${board[$j,$i]} == ${board[$j,$(( $i+1 ))]} ] && [ ${board[$j,$(( $i+2 ))]} == ${board[$j,$i]} ]
-                                then
-                                        value=1
-                                        break
-                                fi
-                        fi
-                done
-	if [ $value -eq 1 ]
-	then
-		break
-	fi
+		if [ $value -eq 0 ]
+		then
+        	j=1
+                if [ ${board[$j,$i]} != "." ] && [ ${board[$j,$i]} == ${board[$(( $j+1 )),$i]} ] && [ ${board[$(( $j+1 )),$i]} == ${board[$(( $j+2 )),$i]} ]
+                then
+	                value=1
+			checkWinner
+			break
+                fi
+		fi
         done
 }
 
 function checkDiagonal()
 {
-	if [ ${board[1,1]} != '.' ]
+	if [ ${board[1,1]} != "." ] && [ ${board[1,1]} == ${board[2,2]} ] && [ ${board[2,2]} == ${board[3,3]} ]
 	then
-		if [ ${board[1,1]} == ${board[2,2]} ] && [ ${board[2,2]} == ${board[3,3]} ]
-		then
-			value=1
-		fi
-	fi
-
-	if [ ${board[1,3]} != '.' ]
+		i=1
+		j=1
+		value=1
+		checkWinner
+	elif [ ${board[1,3]} != "." ] && [ ${board[1,3]} == ${board[2,2]} ] && [ ${board[2,2]} == ${board[3,1]} ]
 	then
-		if [ ${board[1,3]} == ${board[2,2]} ] && [ ${board[2,2]} == ${board[3,1]} ]
-		then
-			value=1
-		fi
+		i=1
+		j=3
+		value=1
+		checkWinner
 	fi
 }
 
 function checkTie()
 {
-	local tie=0
+	tie=0
 	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
 		for (( j=1;j<=$NUMBER_OF_COLUMNS; j++ ))
 		do
 			if [ ${board[$i,$j]} != '.' ]
 			then
-				tie=1
-				break
+				tie=$(( $tie+1 ))
+				if [ $tie -eq 9 ]
+				then
+					break
+				fi
 			fi
 		done
-		if [ $tie -eq 1 ]
+		if [ $tie -eq 9 ]
 		then
 			break
 		fi
 	done
 }
 
+function checkWinner()
+{
+	if [ ${board[$i,$j]} == $computerSymbol ]
+	then
+		echo "computer won"
+	elif [ ${board[$i,$j]} == $playerSymbol ]
+	then
+		echo "player won"
+	fi
+}
 function displayWinner()
 {
 	checkTie
@@ -172,32 +173,23 @@ function setComputerSymbolToWinRow()
 {
 	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
 	do
-		if [ $value -ne 1 ]
+		if [ $flag -ne 1 ]
 		then
-                	for (( j=1; j<=$NUMBER_OF_COLUMNS; ))
-                	do
-				if [ ${board[$i,$j]} == ${board[$i,$(( $j+1 ))]} ] && [ ${board[$i,$j]} == $computerSymbol ] && [ ${board[$i,$(( $j+2 ))]} != $playerSymbol ]
-				then
-							board[$i,$(( $j+2 ))]=$computerSymbol
-							value=1
-							break
-				elif [ ${board[$i,$j]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$i,$j]} == $computerSymbol ] && [ ${board[$i,$(( $j+1 ))]} != $playerSymbol ]
-				then
-					board[$i,$(( $j+1 ))]=$computerSymbol
-					value=1
-					break
-				elif [ ${board[$i,$(( $j+1 ))]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$i,$(( $j+1 ))]} == $computerSymbol ] && [ ${board[$i,$j]} != $playerSymbol ]
-				then
-					board[$i,$j]=$computerSymbol
-					value=1
-					break
-				fi
-                	done
-			if [ $value -eq 1 ]
+			j=1
+			if [ ${board[$i,$j]} == $computerSymbol ] && [ ${board[$i,$(( $j+1 ))]} == $computerSymbol ] && [ ${board[$i,$(( $j+2 ))]} == "." ]
 			then
-				break
+				board[$i,$(( $j+2 ))]=$computerSymbol
+				flag=1
+			elif [ ${board[$i,$j]} == $computerSymbol ] && [ ${board[$i,$(( $j+1 ))]} == "." ] && [ ${board[$i,$(( $j+2 ))]} == $computerSymbol ]
+			then
+				board[$i,$(( $j+1 ))]=$computerSymbol
+				flag=1
+			elif [ ${board[$i,$j]} == "." ] && [ ${board[$i,$(( $j+1 ))]} == $computerSymbol ] && [ ${board[$i,$(( $j+2 ))]} == $computerSymbol ]
+			then
+				board[$i,$j]=$computerSymbol
+				flag=1
 			fi
-		fi
+	fi
         done
 }
 
@@ -205,31 +197,22 @@ function setComputerSymbolToWinColumn()
 {
         for (( i=1;i<=$NUMBER_OF_COLUMNS; i++ ))
         do
-		if [ $value -ne 1 ]
+		if [ $flag -ne 1 ]
 		then
-                	for (( j=1; j<=$NUMBER_OF_ROWS; ))
-                	do
-                		if [ ${board[$j,$i]} == ${board[$j,$(( $i+1 ))]} ] && [ ${board[$j,$(( $i+2 ))]} != $computerSymbol ]
-                        	then
-                        		board[$j,$(( $i+2 ))]=$computerSymbol
-                     	           	value=1
-                                	break
-                        	elif [ ${board[$j,$i]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$j,$(( $i+1 ))]} != $computerSymbol ]
-                        	then
-                        		board[$j,$(( $i+1 ))]=$computerSymbol
-                        	        value=1
-                        	        break
-                        	elif [ ${board[$j,$(( $i+1 ))]} == ${board[$i,$(( $j+2 ))]} ] || [ ${board[$j,$i]} != $computerSymbol ]
-                        	then
-                        		board[$j,$i]=$computerSymbol
-                                	value=1
-                                	break
-                        	fi
-                	done
-                if [ $value -eq 1 ]
-                then
-                        break
-                fi
+            		j=1
+                	if [ ${board[$j,$i]} == $computerSymbol ] && [ ${board[$(( $j+1 )),$i]} == $computerSymbol ] && [ ${board[$(( $j+2 )),$i]} == "." ]
+                        then
+                                board[$(( $j+2 )),$i]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$j,$i]} == $computerSymbol ] && [ ${board[$(( $j+1 )),$i]} == "." ] && [ ${board[$(( $j+2 )),$i]} == $computerSymbol ]
+                        then
+                                board[$(( $j+1 )),$i]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$j,$i]} == "." ] && [ ${board[$(( $j+1 )),$i]} == $computerSymbol ] && [ ${board[$(( $j+2 )),$i]} == $computerSymbol ]
+                        then
+                                board[$j,$i]=$computerSymbol
+                                flag=1
+                        fi
 		fi
         done
 }
@@ -239,27 +222,27 @@ function setComputerSymbolToWinDiagonal()
 	if [ ${board[1,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == '.' ]
 	then
 		board[3,3]=$computerSymbol
-		value=1
+		flag=1
 	elif [ ${board[1,1]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
 	then
 		board[2,2]=$computerSymbol
-		value=1
-	elif [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[3,3]} == '.' ]
+		flag=1
+	elif [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[1,1]} == '.' ]
         then
-                board[3,3]=$computerSymbol
-                value=1
+                board[1,1]=$computerSymbol
+                flag=1
 	elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,1]} == '.' ]
         then
                 board[3,1]=$computerSymbol
-                value=1
+                flag=1
 	elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
         then
                 board[2,2]=$computerSymbol
-                value=1
+                flag=1
 	elif [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[1,3]} == '.' ]
         then
                 board[1,3]=$computerSymbol
-                value=1
+                flag=1
 	fi
 }
 
@@ -269,29 +252,21 @@ function setComputerSymbolToBlockRow()
         do
 		if [ $flag == 0 ]
 		then
-                	for (( j=1; j<=$NUMBER_OF_COLUMNS; ))
-                	do
-                		if [ ${board[$i,$j]} == ${board[$i,$(( $j+1 ))]} ] && [ ${board[$i,$j]} == $playerSymbol ] && [ ${board[$i,$(( $j+2 ))]} == '.' ]
-                        	then
-                        		board[$i,$(( $j+2 ))]=$computerSymbol
-					flag=1
-                                        break
-                                elif [ ${board[$i,$j]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$i,$j]} == $playerSymbol ] && [ ${board[$i,$(( $j+1 ))]} == '.' ]
-                                then
-                                        board[$i,$(( $j+1 ))]=$computerSymbol
-					flag=1
-                                        break
-                                elif [ ${board[$i,$(( $j+1 ))]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$i,$(( $j+1 ))]} ] && [ ${board[$i,$j]} == '.' ]
-                                then
-                                        board[$i,$j]=$computerSymbol
-					flag=1
-                                        break
-                                fi
-                	done
-		fi
-		if [ $flag ==1 ]
-		then
-			break
+                	j=1
+               		if [ ${board[$i,$j]} == $playerSymbol ] && [ ${board[$i,$(( $j+1 ))]} == $playerSymbol ] && [ ${board[$i,$(( $j+2 ))]} == "." ]
+                        then
+                                board[$i,$(( $j+2 ))]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$i,$j]} == $playerSymbol ] && [ ${board[$i,$(( $j+1 ))]} == "." ] && [ ${board[$i,$(( $j+2 ))]} == $playerSymbol ]
+                        then
+                                board[$i,$(( $j+1 ))]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$i,$j]} == "." ] && [ ${board[$i,$(( $j+1 ))]} == $playerSymbol ] && [ ${board[$i,$(( $j+2 ))]} == $playerSymbol ]
+                        then
+                                board[$i,$j]=$computerSymbol
+                                flag=1
+                        fi
+
 		fi
 	done
 }
@@ -301,29 +276,21 @@ function setComputerSymbolToBlockColumn()
 	do
 		if [ $flag == 0 ]
 		then
-	                for (( j=1; j<=$NUMBER_OF_ROWS; ))
-        	        do
-                                if [ ${board[$j,$i]} == ${board[$j,$(( $i+1 ))]} ] && [ ${board[$j,$i]} == $playerSymbol ] && [ ${board[$j,$(( $i+2 ))]} != $playerSymbol ]
-                                then
-                                        board[$j,$(( $i+2 ))]=$computerSymbol
-                                        flag=1
-                                        break
-                                elif [ ${board[$j,$i]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$j,$i]} == $playerSymbol ] && [ ${board[$j,$(( $i+1 ))]} != $playerSymbol ]
-                                then
-                                        board[$j,$(( $i+1 ))]=$computerSymbol
-                                        flag=1
-                                        break
-                                elif [ ${board[$j,$(( $i+1 ))]} == ${board[$i,$(( $j+2 ))]} ] && [ ${board[$j,$(( $i+1 ))]} ==$playerSymbol ] && [ ${board[$j,$i]} != $playerSymbol ]
-                                then
-                                        board[$j,$i]=$computerSymbol
-                                        flag=1
-                                        break
-                                fi
-                        done
-                fi
-                if [ $flag -eq 1 ]
-                then
-                        break
+	            	j=1
+                        if [ ${board[$j,$i]} == $playerSymbol ] && [ ${board[$(( $j+1 )),$i]} == $playerSymbol ] && [ ${board[$(( $j+2 )),$i]} == "." ]
+                        then
+                                board[$(( $j+2 )),$i]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$j,$i]} == $playerSymbol ] && [ ${board[$(( $j+1 )),$i]} == "." ] && [ ${board[$(( $j+2 )),$i]} == $playerSymbol ]
+                        then
+                                board[$(( $j+1 )),$i]=$computerSymbol
+                                flag=1
+                        elif [ ${board[$j,$i]} == "." ] && [ ${board[$(( $j+1 )),$i]} == $playerSymbol ] && [ ${board[$(( $j+2 )),$i]} == $playerSymbol ]
+                        then
+                                board[$j,$i]=$computerSymbol
+                                flag=1
+                        fi
+
                 fi
 	done
 }
@@ -332,27 +299,27 @@ function setComputerSymbolToBlockDiagonal()
 {
 	if [ $flag == 0 ]
 	then
-        if [ ${board[1,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == '.' ]
+        if [ ${board[1,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == '.' ]
         then
                 board[3,3]=$computerSymbol
                 flag=1
-        elif [ ${board[1,1]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
+        elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ] && [ ${board[2,2]} == '.' ]
         then
                 board[2,2]=$computerSymbol
                 flag=1
-        elif [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[3,3]} == '.' ]
+        elif [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ] && [ ${board[1,1]} == '.' ]
         then
-                board[3,3]=$computerSymbol
+                board[1,1]=$computerSymbol
                 flag=1
-        elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,1]} == '.' ]
+        elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,1]} == '.' ]
         then
                 board[3,1]=$computerSymbol
                 flag=1
-        elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
+        elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == '.' ]
         then
                 board[2,2]=$computerSymbol
                 flag=1
-        elif [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[1,3]} == '.' ]
+        elif [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[1,3]} == '.' ]
         then
                 board[1,3]=$computerSymbol
                 flag=1
@@ -364,28 +331,34 @@ function occupyCorner()
 {
 	for (( i=1; i<=$NUMBER_OF_ROWS; i=$(( $i+2 )) ))
         do
+		if [ $flag -eq 0 ]
+		then
                 for (( j=1; j<=$NUMBER_OF_COLUMNS; j=$(( $j+2 )) ))
                 do
                         if [ ${board[$i,$j]} = '.' ]
                         then
 				board[$i,$j]=$computerSymbol
-				value=1
+				flag=1
 				break
 			fi
 		done
-		if [ $value -eq 1 ]
-		then
-			break
 		fi
+	if [ $flag -eq 1 ]
+	then
+		break
+	fi
 	done
 }
 
 function occupyCentre()
 {
+	if [ $flag -eq 0 ]
+	then
 	if [ ${board[2,2]} == '.' ]
 	then
 		board[2,2]=$computerSymbol
-		value=1
+		flag=1
+	fi
 	fi
 }
 
@@ -393,6 +366,8 @@ function occupySide()
 {
 	for (( i=1; i<=$NUMBER_OF_ROWS; i++ ))
         do
+		if [ $flag -eq 0 ]
+		then
                 for (( j=1; j<=$(( $NUMBER_OF_COLUMNS-1 )); j++ ))
                 do
 			if [ $(( $j-$i )) -eq 1 ] || [ $(( $i-$j )) -eq 1 ]
@@ -400,41 +375,43 @@ function occupySide()
 				if [ ${board[$i,$j]} == '.' ]
 				then
 					board[$i,$j]=$computerSymbol
-					value=1
+					flag=1
 				fi
 			fi
 		done
-		break
+		fi
 	done
 }
 
 function computerWin()
 {
-	if [ $flag -ne 1 ]
-	then
 		setComputerSymbolToWinRow
 		setComputerSymbolToWinColumn
 		setComputerSymbolToWinDiagonal
-	fi
 }
 
 function computerBlock()
 {
-	if [ $flag -ne 1 ]
-	then
 		setComputerSymbolToBlockRow
 		setComputerSymbolToBlockColumn
 		setComputerSymbolToBlockDiagonal
-	fi
 }
 
 function computerMove()
 {
+	flag=0
 	computerWin
 	computerBlock
 	occupyCorner
 	occupyCentre
 	occupySide
+	displayBoard
+	displayWinner
+	checkTie
+	if [ $tie != 9 ] && [ $value == 0 ]
+	then
+		playerMove
+	fi
 }
 
 function playerMove()
@@ -458,22 +435,30 @@ function playerMove()
 
 function playGame()
 {
+	tie=0
 	resetBoard
 	toss
-	while [ $value -ne 1 ]
+	while [ $value == 0 ] && [ $tie != 9 ]
 	do
 		displayBoard
 		changeTurn
 		displayWinner
 		player=$(( (( $playerTurn%2 ))+1 ))
+		if [ $tie == 9 ]
+		then
+			echo "TIE"
+			break
+		fi
 	done
-	if [ $player -eq 2 ]
-	then
-		echo "Player won the game"
-	else
-		echo "Computer won the game"
-	fi
+	#if [ $tie == 9 ]
+	#then
+	#	echo "match tied"
+	#if [ $player == 2 ]
+	#then
+	#	echo "Player won the game"
+	#else
+	#	echo "Computer won the game"
+	#fi
 }
 
 playGame
-
