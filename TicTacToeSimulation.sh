@@ -225,67 +225,45 @@ function setComputerSymbolToDiagonal()
 {
 	if [ ${board[3,3]} == '.' ]
 	then
-		if [ ${board[1,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+		if [ ${board[1,1]} == $1 ] && [ ${board[2,2]} == $1 ]
 		then
-			board[3,3]=$computerSymbol
-			flag=$TRUE
-		elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
-		then
-			board[3,3]== $computerSymbol
+			board[3,3]=$2
 			flag=$TRUE
 		fi
 	elif [ ${board[2,2]} == '.' ]
 	then
-		if [ ${board[1,1]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ]
+		if [ ${board[1,1]} == $1 ] && [ ${board[3,3]} == $1 ]
 		then
-			board[2,2]=$computerSymbol
+			board[2,2]=$2
 			flag=$TRUE
-		elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ]
-		then
-			board[2,2]=$computerSymbol
 		fi
 	elif [ ${board[1,1]} == '.' ]
 	then
-		if [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ]
+		if [ ${board[2,2]} == $1 ] && [ ${board[3,3]} == $1 ]
         	then
-                	board[1,1]=$computerSymbol
+                	board[1,1]=$2
                 	flag=$TRUE
-		elif [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ]
-		then
-			board[1,1]=$computerSymbol
 		fi
 	elif [ ${board[3,1]} == '.' ]
 	then
-		if [ ${board[1,3]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+		if [ ${board[1,3]} == $1 ] && [ ${board[2,2]} == $1 ]
         	then
-                	board[3,1]=$computerSymbol
+                	board[3,1]=$2
                 	flag=$TRUE
-		elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
-		then
-			board[3,1]=$computerSymbol
-			flag=$TRUE
 		fi
 	elif [ ${board[2,2]} == '.' ]
 	then
-		if [ ${board[1,3]} == $computerSymbol ] && [ ${board[3,1]} == $computerSymbol ]
+		if [ ${board[1,3]} == $1 ] && [ ${board[3,1]} == $1 ]
         	then
-                	board[2,2]=$computerSymbol
+                	board[2,2]=$2
                 	flag=$TRUE
-		elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[3,1]} == $playerSymbol ]
-		then
-			board[2,2]=$computerSymbol
-			flag=$TRUE
 		fi
 	elif [ ${board[1,3]} == '.' ]
 	then
-		if [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+		if [ ${board[3,1]} == $1 ] && [ ${board[2,2]} == $1 ]
         	then
-                	board[1,3]=$computerSymbol
+                	board[1,3]=$2
                 	flag=$TRUE
-		elif [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
-		then
-			board[1,3]=$computerSymbol
-			flag=$TRUE
 		fi
 	fi
 }
@@ -399,14 +377,14 @@ function computerWin()
 {
 		setComputerSymbolToWinRow
 		setComputerSymbolToWinColumn
-		setComputerSymbolToDiagonal
+		setComputerSymbolToDiagonal $computerSymbol $computerSymbol
 }
 
 function computerBlock()
 {
 		setComputerSymbolToBlockRow
 		setComputerSymbolToBlockColumn
-		setComputerSymbolToDiagonal
+		setComputerSymbolToDiagonal $playerSymbol $computerSymbol
 }
 
 function computerMove()
