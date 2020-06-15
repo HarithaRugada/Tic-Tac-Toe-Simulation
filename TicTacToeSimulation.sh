@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 echo "WELCOME TO TIC TAC TOE SIMULATION"
 
@@ -143,6 +143,7 @@ function checkTie()
 				tie=$(( $tie+$TRUE ))
 				if [ $tie -eq $TOTAL_GRIDS ]
 				then
+					echo "TIE"
 					break
 				fi
 			fi
@@ -220,32 +221,72 @@ function setComputerSymbolToWinColumn()
         done
 }
 
-function setComputerSymbolToWinDiagonal()
+function setComputerSymbolToDiagonal()
 {
-	if [ ${board[1,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == '.' ]
+	if [ ${board[3,3]} == '.' ]
 	then
-		board[3,3]=$computerSymbol
-		flag=$TRUE
-	elif [ ${board[1,1]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
+		if [ ${board[1,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+		then
+			board[3,3]=$computerSymbol
+			flag=$TRUE
+		elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
+		then
+			board[3,3]== $computerSymbol
+			flag=$TRUE
+		fi
+	elif [ ${board[2,2]} == '.' ]
 	then
-		board[2,2]=$computerSymbol
-		flag=$TRUE
-	elif [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ] && [ ${board[1,1]} == '.' ]
-        then
-                board[1,1]=$computerSymbol
-                flag=$TRUE
-	elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,1]} == '.' ]
-        then
-                board[3,1]=$computerSymbol
-                flag=$TRUE
-	elif [ ${board[1,3]} == $computerSymbol ] && [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == '.' ]
-        then
-                board[2,2]=$computerSymbol
-                flag=$TRUE
-	elif [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ] && [ ${board[1,3]} == '.' ]
-        then
-                board[1,3]=$computerSymbol
-                flag=$TRUE
+		if [ ${board[1,1]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ]
+		then
+			board[2,2]=$computerSymbol
+			flag=$TRUE
+		elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ]
+		then
+			board[2,2]=$computerSymbol
+		fi
+	elif [ ${board[1,1]} == '.' ]
+	then
+		if [ ${board[2,2]} == $computerSymbol ] && [ ${board[3,3]} == $computerSymbol ]
+        	then
+                	board[1,1]=$computerSymbol
+                	flag=$TRUE
+		elif [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ]
+		then
+			board[1,1]=$computerSymbol
+		fi
+	elif [ ${board[3,1]} == '.' ]
+	then
+		if [ ${board[1,3]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+        	then
+                	board[3,1]=$computerSymbol
+                	flag=$TRUE
+		elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
+		then
+			board[3,1]=$computerSymbol
+			flag=$TRUE
+		fi
+	elif [ ${board[2,2]} == '.' ]
+	then
+		if [ ${board[1,3]} == $computerSymbol ] && [ ${board[3,1]} == $computerSymbol ]
+        	then
+                	board[2,2]=$computerSymbol
+                	flag=$TRUE
+		elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[3,1]} == $playerSymbol ]
+		then
+			board[2,2]=$computerSymbol
+			flag=$TRUE
+		fi
+	elif [ ${board[1,3]} == '.' ]
+	then
+		if [ ${board[3,1]} == $computerSymbol ] && [ ${board[2,2]} == $computerSymbol ]
+        	then
+                	board[1,3]=$computerSymbol
+                	flag=$TRUE
+		elif [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ]
+		then
+			board[1,3]=$computerSymbol
+			flag=$TRUE
+		fi
 	fi
 }
 
@@ -296,38 +337,6 @@ function setComputerSymbolToBlockColumn()
 
                 fi
 	done
-}
-
-function setComputerSymbolToBlockDiagonal()
-{
-	if [ $flag == $FALSE ]
-	then
-        if [ ${board[1,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == '.' ]
-        then
-                board[3,3]=$computerSymbol
-                flag=$TRUE
-        elif [ ${board[1,1]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ] && [ ${board[2,2]} == '.' ]
-        then
-                board[2,2]=$computerSymbol
-                flag=$TRUE
-        elif [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,3]} == $playerSymbol ] && [ ${board[1,1]} == '.' ]
-        then
-                board[1,1]=$computerSymbol
-                flag=$TRUE
-        elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[3,1]} == '.' ]
-        then
-                board[3,1]=$computerSymbol
-                flag=$TRUE
-        elif [ ${board[1,3]} == $playerSymbol ] && [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == '.' ]
-        then
-                board[2,2]=$computerSymbol
-                flag=$TRUE
-        elif [ ${board[3,1]} == $playerSymbol ] && [ ${board[2,2]} == $playerSymbol ] && [ ${board[1,3]} == '.' ]
-        then
-                board[1,3]=$computerSymbol
-                flag=$TRUE
-        fi
-	fi
 }
 
 function occupyCorner()
@@ -390,14 +399,14 @@ function computerWin()
 {
 		setComputerSymbolToWinRow
 		setComputerSymbolToWinColumn
-		setComputerSymbolToWinDiagonal
+		setComputerSymbolToDiagonal
 }
 
 function computerBlock()
 {
 		setComputerSymbolToBlockRow
 		setComputerSymbolToBlockColumn
-		setComputerSymbolToBlockDiagonal
+		setComputerSymbolToDiagonal
 }
 
 function computerMove()
@@ -447,11 +456,6 @@ function playGame()
 		changeTurn
 		displayWinner
 		player=$(( (( $playerTurn%2 ))+$TRUE ))
-		if [ $tie == $TOTAL_GRIDS ]
-		then
-			echo "TIE"
-			break
-		fi
 	done
 }
 
